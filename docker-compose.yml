@@ -1,0 +1,20 @@
+version: "3.9"
+services:
+  postgres-db:
+    image: postgres:14.2-alpine
+    ports:
+      - "15432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123123123
+      POSTGRES_DB: supertruyen
+
+  book-server:
+    build:
+      context: ./backend
+      dockerfile: ./services/book_service/server/Dockerfile.dev
+    environment:
+      DB_DRIVER: postgres
+      DB_DSN: ${DB_DSN}
+    ports:
+      - 3000:3000
