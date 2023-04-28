@@ -17,7 +17,7 @@ import (
 
 func newServiceCtx() sctx.ServiceContext {
 	return sctx.NewServiceContext(
-		sctx.WithName("book service"),
+		sctx.WithName("chapter service"),
 		sctx.WithComponent(ginc.NewGin(common.KeyCompGIN)),
 		sctx.WithComponent(gormc.NewGormDB(common.KeyCompPostgres, "")),
 	)
@@ -25,7 +25,7 @@ func newServiceCtx() sctx.ServiceContext {
 
 var rootCmd = &cobra.Command{
 	Use:   "app",
-	Short: "Start book service",
+	Short: "Start chapter service",
 	Run: func(cmd *cobra.Command, args []string) {
 		serviceCtx := newServiceCtx()
 

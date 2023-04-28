@@ -9,6 +9,12 @@ services:
       POSTGRES_PASSWORD: 123123123
       POSTGRES_DB: supertruyen
 
+  gateway:
+    build:
+      context: ./gateway
+    ports:
+      - 3000:3000
+
   book-server:
     build:
       context: ./backend
@@ -16,5 +22,11 @@ services:
     environment:
       DB_DRIVER: postgres
       DB_DSN: ${DB_DSN}
-    ports:
-      - 3000:3000
+
+  chapter-server:
+    build:
+      context: ./backend
+      dockerfile: ./services/chapter_service/server/Dockerfile.dev
+    environment:
+      DB_DRIVER: postgres
+      DB_DSN: ${DB_DSN}
