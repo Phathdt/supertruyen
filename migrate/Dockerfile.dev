@@ -1,0 +1,6 @@
+FROM alpine:3.17
+WORKDIR /
+COPY supertruyen-migrate ./supertruyen
+COPY /run.sh .
+
+ENTRYPOINT sh run.sh

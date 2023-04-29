@@ -15,6 +15,13 @@ services:
     ports:
       - 4000:4000
 
+  migrate:
+    build:
+      context: ./migrate
+      dockerfile: ./Dockerfile.dev
+    environment:
+      MIGRATE_DSN: ${MIGRATE_DSN}
+
   book-server:
     build:
       context: ./backend
