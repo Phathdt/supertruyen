@@ -5,4 +5,5 @@ const (
 	KeyCompGIN      = "gin"
 	KeyCompJWT      = "jwt"
 	KeyCompConf     = "config"
+	KeyClerk        = "clerk"
 )

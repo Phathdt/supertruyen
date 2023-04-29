@@ -3,6 +3,7 @@ package common
 import (
 	"context"
 
+	"github.com/clerkinc/clerk-sdk-go/clerk"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"gorm.io/gorm"
@@ -15,6 +16,10 @@ type GINComponent interface {
 
 type GormComponent interface {
 	GetDB() *gorm.DB
+}
+
+type ClerkComponent interface {
+	GetClient() clerk.Client
 }
 
 type JWTProvider interface {
