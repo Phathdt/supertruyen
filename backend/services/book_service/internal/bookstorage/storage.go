@@ -41,3 +41,20 @@ func (s *storage) ListBook(ctx context.Context, filter *bookmodel.Filter, paging
 
 	return books, nil
 }
+
+func (s *storage) GetBookById(ctx context.Context, id int) (*bookentity.Book, error) {
+	var book bookentity.Book
+
+	if err := s.db.
+		Table(book.TableName()).
+		Where("id = ?", id).
+		First(&book).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, core.ErrRecordNotFound
+		}
+
+		return nil, errors.WithStack(err)
+	}
+
+	return &book, nil
+}

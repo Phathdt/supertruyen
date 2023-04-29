@@ -9,6 +9,7 @@ import (
 )
 
 type BookStorage interface {
+	GetBookById(ctx context.Context, id int) (*bookentity.Book, error)
 	ListBook(ctx context.Context, filter *bookmodel.Filter, paging *core.Paging) ([]bookentity.Book, error)
 }
 
@@ -22,4 +23,8 @@ func NewRepo(store BookStorage) *repo {
 
 func (r *repo) ListBook(ctx context.Context, filter *bookmodel.Filter, paging *core.Paging) ([]bookentity.Book, error) {
 	return r.store.ListBook(ctx, filter, paging)
+}
+
+func (r *repo) GetBookDetail(ctx context.Context, id int) (*bookentity.Book, error) {
+	return r.store.GetBookById(ctx, id)
 }
