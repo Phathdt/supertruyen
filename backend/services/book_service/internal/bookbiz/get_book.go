@@ -3,11 +3,11 @@ package bookbiz
 import (
 	"context"
 
-	"supertruyen/entity/bookentity"
+	"supertruyen/entity"
 )
 
 type GetBookRepo interface {
-	GetBookDetail(ctx context.Context, id int) (*bookentity.Book, error)
+	GetBookDetail(ctx context.Context, id int) (*entity.Book, error)
 }
 
 type getBookBiz struct {
@@ -18,6 +18,6 @@ func NewGetBookBiz(repo GetBookRepo) *getBookBiz {
 	return &getBookBiz{repo: repo}
 }
 
-func (b *getBookBiz) Response(ctx context.Context, id int) (*bookentity.Book, error) {
+func (b *getBookBiz) Response(ctx context.Context, id int) (*entity.Book, error) {
 	return b.repo.GetBookDetail(ctx, id)
 }

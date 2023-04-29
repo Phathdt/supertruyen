@@ -6,7 +6,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/viettranx/service-context/core"
 	"gorm.io/gorm"
-	"supertruyen/entity/bookentity"
+	"supertruyen/entity"
 	"supertruyen/services/book_service/internal/bookmodel"
 )
 
@@ -18,10 +18,10 @@ func NewStorage(db *gorm.DB) *storage {
 	return &storage{db: db}
 }
 
-func (s *storage) ListBook(ctx context.Context, filter *bookmodel.Filter, paging *core.Paging) ([]bookentity.Book, error) {
-	var books []bookentity.Book
+func (s *storage) ListBook(ctx context.Context, filter *bookmodel.Filter, paging *core.Paging) ([]entity.Book, error) {
+	var books []entity.Book
 
-	db := s.db.Table(bookentity.Book{}.TableName())
+	db := s.db.Table(entity.Book{}.TableName())
 
 	//TODO update with filter
 
@@ -42,8 +42,8 @@ func (s *storage) ListBook(ctx context.Context, filter *bookmodel.Filter, paging
 	return books, nil
 }
 
-func (s *storage) GetBookById(ctx context.Context, id int) (*bookentity.Book, error) {
-	var book bookentity.Book
+func (s *storage) GetBookById(ctx context.Context, id int) (*entity.Book, error) {
+	var book entity.Book
 
 	if err := s.db.
 		Table(book.TableName()).

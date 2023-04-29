@@ -1,6 +1,6 @@
 FROM alpine:3.17
 WORKDIR /
-COPY book-server ./app
+COPY chapter-server ./app
 COPY /services/chapter_service/server/run.sh .
 
 ENTRYPOINT sh run.sh

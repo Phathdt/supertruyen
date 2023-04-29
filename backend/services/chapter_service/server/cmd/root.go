@@ -13,6 +13,8 @@ import (
 	smdlw "github.com/viettranx/service-context/component/ginc/middleware"
 	"github.com/viettranx/service-context/component/gormc"
 	"supertruyen/common"
+	"supertruyen/plugins/clerkc"
+	"supertruyen/services/chapter_service/internal/chaptertransport/ginchapter"
 )
 
 func newServiceCtx() sctx.ServiceContext {
@@ -20,6 +22,7 @@ func newServiceCtx() sctx.ServiceContext {
 		sctx.WithName("chapter service"),
 		sctx.WithComponent(ginc.NewGin(common.KeyCompGIN)),
 		sctx.WithComponent(gormc.NewGormDB(common.KeyCompGorm, "")),
+		sctx.WithComponent(clerkc.NewClerkComponent(common.KeyClerk)),
 	)
 }
 
@@ -37,6 +40,8 @@ var rootCmd = &cobra.Command{
 			logger.Fatal(err)
 		}
 
+		//clerkComp := serviceCtx.MustGet(common.KeyClerk).(common.ClerkComponent)
+
 		ginComp := serviceCtx.MustGet(common.KeyCompGIN).(common.GINComponent)
 
 		router := ginComp.GetRouter()
@@ -45,6 +50,13 @@ var rootCmd = &cobra.Command{
 		router.GET("/ping", func(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{"data": "pong"})
 		})
+
+		publicRouter := router.Group("/api/chapters")
+		{
+			publicRouter.GET("", ginchapter.ListChapter(serviceCtx))
+		}
+
+		//protectedRoute := router.Group("/api/books", middleware.RequireAuth(clerkComp.GetClient()))
 
 		if err := router.Run(fmt.Sprintf(":%d", ginComp.GetPort())); err != nil {
 			logger.Fatal(err)
