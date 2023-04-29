@@ -6,24 +6,23 @@ import (
 	"os"
 	"time"
 
-	"github.com/clerkinc/clerk-sdk-go/clerk"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cobra"
 	sctx "github.com/viettranx/service-context"
 	"github.com/viettranx/service-context/component/ginc"
 	smdlw "github.com/viettranx/service-context/component/ginc/middleware"
 	"github.com/viettranx/service-context/component/gormc"
-	"github.com/viettranx/service-context/core"
 	"supertruyen/common"
 	"supertruyen/middleware"
 	"supertruyen/plugins/clerkc"
+	"supertruyen/services/book_service/internal/booktransport/ginbook"
 )
 
 func newServiceCtx() sctx.ServiceContext {
 	return sctx.NewServiceContext(
 		sctx.WithName("book service"),
 		sctx.WithComponent(ginc.NewGin(common.KeyCompGIN)),
-		sctx.WithComponent(gormc.NewGormDB(common.KeyCompPostgres, "")),
+		sctx.WithComponent(gormc.NewGormDB(common.KeyCompGorm, "")),
 		sctx.WithComponent(clerkc.NewClerkComponent(common.KeyClerk)),
 	)
 }
@@ -49,11 +48,19 @@ var rootCmd = &cobra.Command{
 		router := ginComp.GetRouter()
 		router.Use(gin.Recovery(), gin.Logger(), smdlw.Recovery(serviceCtx))
 
-		router.GET("/ping", middleware.RequireAuth(clerkComp.GetClient()), func(c *gin.Context) {
-			fmt.Println(1111111)
-			requester := c.MustGet(core.KeyRequester).(*clerk.User)
-			c.JSON(http.StatusOK, gin.H{"data": "pong", "user": requester})
+		router.GET("/ping", func(c *gin.Context) {
+			c.JSON(http.StatusOK, gin.H{"data": "pong"})
 		})
+
+		publicRouter := router.Group("/api/books")
+		{
+			publicRouter.GET("", ginbook.ListBook(serviceCtx))
+		}
+
+		protectedRoute := router.Group("/api/books", middleware.RequireAuth(clerkComp.GetClient()))
+		{
+			protectedRoute.POST("", ginbook.CreateBook(serviceCtx))
+		}
 
 		if err := router.Run(fmt.Sprintf(":%d", ginComp.GetPort())); err != nil {
 			logger.Fatal(err)

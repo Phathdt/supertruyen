@@ -19,7 +19,7 @@ func newServiceCtx() sctx.ServiceContext {
 	return sctx.NewServiceContext(
 		sctx.WithName("chapter service"),
 		sctx.WithComponent(ginc.NewGin(common.KeyCompGIN)),
-		sctx.WithComponent(gormc.NewGormDB(common.KeyCompPostgres, "")),
+		sctx.WithComponent(gormc.NewGormDB(common.KeyCompGorm, "")),
 	)
 }
 
