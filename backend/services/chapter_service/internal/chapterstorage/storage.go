@@ -42,3 +42,20 @@ func (s *storage) ListChapter(ctx context.Context, filter *chaptermodel.Filter, 
 
 	return chapters, nil
 }
+
+func (s *storage) GetChapterDetail(ctx context.Context, id int) (*entity.Chapter, error) {
+	var data entity.Chapter
+
+	if err := s.db.
+		Table(data.TableName()).
+		Where("id = ?", id).
+		First(&data).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, core.ErrRecordNotFound
+		}
+
+		return nil, errors.WithStack(err)
+	}
+
+	return &data, nil
+}

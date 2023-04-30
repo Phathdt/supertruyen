@@ -10,6 +10,7 @@ import (
 
 type ChapterStorage interface {
 	ListChapter(ctx context.Context, filter *chaptermodel.Filter, paging *core.Paging) ([]entity.Chapter, error)
+	GetChapterDetail(ctx context.Context, id int) (*entity.Chapter, error)
 }
 
 type repo struct {
@@ -22,4 +23,8 @@ func NewRepo(storage ChapterStorage) *repo {
 
 func (r *repo) ListChapter(ctx context.Context, filter *chaptermodel.Filter, paging *core.Paging) ([]entity.Chapter, error) {
 	return r.storage.ListChapter(ctx, filter, paging)
+}
+
+func (r *repo) GetChapterDetail(ctx context.Context, id int) (*entity.Chapter, error) {
+	return r.storage.GetChapterDetail(ctx, id)
 }

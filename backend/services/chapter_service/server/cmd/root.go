@@ -54,6 +54,7 @@ var rootCmd = &cobra.Command{
 		publicRouter := router.Group("/api/chapters")
 		{
 			publicRouter.GET("", ginchapter.ListChapter(serviceCtx))
+			publicRouter.GET("/:id", ginchapter.GetBook(serviceCtx))
 		}
 
 		//protectedRoute := router.Group("/api/books", middleware.RequireAuth(clerkComp.GetClient()))
