@@ -13,12 +13,14 @@ import (
 	smdlw "github.com/viettranx/service-context/component/ginc/middleware"
 	"github.com/viettranx/service-context/component/gormc"
 	"supertruyen/common"
+	"supertruyen/plugins/appgrpc"
 	"supertruyen/plugins/discovery/consul"
 	"supertruyen/services/book_service/internal/booktransport/ginbook"
 )
 
 const (
 	serviceName = "book-service"
+	version     = "1.0.0"
 )
 
 func newServiceCtx() sctx.ServiceContext {
@@ -26,7 +28,8 @@ func newServiceCtx() sctx.ServiceContext {
 		sctx.WithName("book service"),
 		sctx.WithComponent(ginc.NewGin(common.KeyCompGIN)),
 		sctx.WithComponent(gormc.NewGormDB(common.KeyCompGorm, "")),
-		sctx.WithComponent(consul.NewConsulComponent(common.KeyCompConsul, serviceName)),
+		sctx.WithComponent(consul.NewConsulComponent(common.KeyCompConsul, serviceName, version)),
+		sctx.WithComponent(appgrpc.NewChapterClient(common.KeyCompChapterClient)),
 	)
 }
 

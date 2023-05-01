@@ -20,6 +20,7 @@ import (
 
 const (
 	serviceName = "chapter-server"
+	version     = "1.0.0"
 )
 
 func newServiceCtx() sctx.ServiceContext {
@@ -28,7 +29,7 @@ func newServiceCtx() sctx.ServiceContext {
 		sctx.WithComponent(ginc.NewGin(common.KeyCompGIN)),
 		sctx.WithComponent(gormc.NewGormDB(common.KeyCompGorm, "")),
 		sctx.WithComponent(clerkc.NewClerkComponent(common.KeyCompClerk)),
-		sctx.WithComponent(consul.NewConsulComponent(common.KeyCompConsul, serviceName)),
+		sctx.WithComponent(consul.NewConsulComponent(common.KeyCompConsul, serviceName, version)),
 	)
 }
 

@@ -21,10 +21,11 @@ type consulComponent struct {
 	client      *consul.Client
 	instanceID  string
 	host        string
+	version     string
 }
 
-func NewConsulComponent(id string, serviceName string) *consulComponent {
-	return &consulComponent{id: id, serviceName: serviceName}
+func NewConsulComponent(id string, serviceName string, version string) *consulComponent {
+	return &consulComponent{id: id, serviceName: serviceName, version: version}
 }
 
 func (c *consulComponent) ID() string {
@@ -65,7 +66,6 @@ func (c *consulComponent) Activate(sc sctx.ServiceContext) error {
 }
 
 func (c *consulComponent) Stop() error {
-	fmt.Println("STOPPPPPPPPPPPPPP")
 	return c.Deregister(context.Background(), c.instanceID, c.serviceName)
 }
 
@@ -83,6 +83,7 @@ func (c *consulComponent) Register(ctx context.Context, instanceID string, servi
 		ID:      instanceID,
 		Name:    serviceName,
 		Port:    port,
+		Tags:    []string{c.version},
 		Check:   &consul.AgentServiceCheck{CheckID: instanceID, TTL: "5s"},
 	})
 }
