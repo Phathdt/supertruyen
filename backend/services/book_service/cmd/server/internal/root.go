@@ -28,7 +28,7 @@ func newServiceCtx() sctx.ServiceContext {
 		sctx.WithName("book service"),
 		sctx.WithComponent(ginc.NewGin(common.KeyCompGIN)),
 		sctx.WithComponent(gormc.NewGormDB(common.KeyCompGorm, "")),
-		sctx.WithComponent(consul.NewConsulComponent(common.KeyCompConsul, serviceName, version)),
+		sctx.WithComponent(consul.NewConsulComponent(common.KeyCompConsul, serviceName, version, 3000)),
 		sctx.WithComponent(appgrpc.NewChapterClient(common.KeyCompChapterClient)),
 	)
 }

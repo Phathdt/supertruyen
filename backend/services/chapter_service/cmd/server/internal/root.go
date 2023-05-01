@@ -12,9 +12,13 @@ import (
 	"github.com/viettranx/service-context/component/ginc"
 	smdlw "github.com/viettranx/service-context/component/ginc/middleware"
 	"github.com/viettranx/service-context/component/gormc"
+	"google.golang.org/grpc"
 	"supertruyen/common"
 	"supertruyen/plugins/clerkc"
 	"supertruyen/plugins/discovery/consul"
+	"supertruyen/plugins/gprc_server"
+	protos "supertruyen/proto/out/proto"
+	"supertruyen/services/chapter_service/internal/chaptertransport/chaptergrpc"
 	"supertruyen/services/chapter_service/internal/chaptertransport/ginchapter"
 )
 
@@ -29,7 +33,8 @@ func newServiceCtx() sctx.ServiceContext {
 		sctx.WithComponent(ginc.NewGin(common.KeyCompGIN)),
 		sctx.WithComponent(gormc.NewGormDB(common.KeyCompGorm, "")),
 		sctx.WithComponent(clerkc.NewClerkComponent(common.KeyCompClerk)),
-		sctx.WithComponent(consul.NewConsulComponent(common.KeyCompConsul, serviceName, version)),
+		sctx.WithComponent(consul.NewConsulComponent(common.KeyCompConsul, serviceName, version, 3000)),
+		sctx.WithComponent(gprc_server.NewGprcServer(common.KeyCompGrpcServer)),
 	)
 }
 
@@ -43,11 +48,15 @@ var rootCmd = &cobra.Command{
 
 		time.Sleep(time.Second * 5)
 
+		//clerkComp := serviceCtx.MustGet(common.KeyCompClerk).(common.ClerkComponent)
+		grpcComp := serviceCtx.MustGet(common.KeyCompGrpcServer).(common.GrpcServer)
+		grpcComp.SetRegisterHdl(func(server *grpc.Server) {
+			protos.RegisterChapterServiceServer(server, chaptergrpc.NewChapterGrpcServer(serviceCtx))
+		})
+
 		if err := serviceCtx.Load(); err != nil {
 			logger.Fatal(err)
 		}
-
-		//clerkComp := serviceCtx.MustGet(common.KeyCompClerk).(common.ClerkComponent)
 
 		ginComp := serviceCtx.MustGet(common.KeyCompGIN).(common.GINComponent)
 

@@ -6,6 +6,7 @@ import (
 	"github.com/clerkinc/clerk-sdk-go/clerk"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
+	"google.golang.org/grpc"
 	"gorm.io/gorm"
 )
 
@@ -16,6 +17,10 @@ type GINComponent interface {
 
 type GormComponent interface {
 	GetDB() *gorm.DB
+}
+
+type GrpcServer interface {
+	SetRegisterHdl(hdl func(*grpc.Server))
 }
 
 type ClerkComponent interface {

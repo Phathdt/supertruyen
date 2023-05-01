@@ -2,11 +2,10 @@ package consul
 
 import (
 	"context"
-	"errors"
 	"flag"
 	"fmt"
-	"strconv"
-	"strings"
+	"log"
+	"net"
 	"time"
 
 	consul "github.com/hashicorp/consul/api"
@@ -14,18 +13,21 @@ import (
 	"supertruyen/plugins/discovery"
 )
 
+const ttl = time.Second * 5
+
 type consulComponent struct {
 	id          string
 	serviceName string
 	logger      sctx.Logger
 	client      *consul.Client
 	instanceID  string
-	host        string
+	consulHost  string
 	version     string
+	port        int
 }
 
-func NewConsulComponent(id string, serviceName string, version string) *consulComponent {
-	return &consulComponent{id: id, serviceName: serviceName, version: version}
+func NewConsulComponent(id string, serviceName string, version string, port int) *consulComponent {
+	return &consulComponent{id: id, serviceName: serviceName, version: version, port: port}
 }
 
 func (c *consulComponent) ID() string {
@@ -33,14 +35,14 @@ func (c *consulComponent) ID() string {
 }
 
 func (c *consulComponent) InitFlags() {
-	flag.StringVar(&c.host, "consul_host", "localhost:8500", "consult host, should be localhost:8500")
+	flag.StringVar(&c.consulHost, "consul_host", "localhost:8500", "consult consulHost, should be localhost:8500")
 }
 
 func (c *consulComponent) Activate(sc sctx.ServiceContext) error {
 	c.logger = sctx.GlobalLogger().GetLogger(c.id)
 
 	config := consul.DefaultConfig()
-	config.Address = c.host
+	config.Address = c.consulHost
 	client, err := consul.NewClient(config)
 	if err != nil {
 		return err
@@ -49,7 +51,7 @@ func (c *consulComponent) Activate(sc sctx.ServiceContext) error {
 	c.client = client
 
 	c.instanceID = discovery.GenerateInstanceID(c.serviceName)
-	if err = c.Register(context.Background(), c.instanceID, c.serviceName, c.host); err != nil {
+	if err = c.Register(context.Background()); err != nil {
 		return err
 	}
 
@@ -69,34 +71,35 @@ func (c *consulComponent) Stop() error {
 	return c.Deregister(context.Background(), c.instanceID, c.serviceName)
 }
 
-func (c *consulComponent) Register(ctx context.Context, instanceID string, serviceName string, hostPort string) error {
-	parts := strings.Split(hostPort, ":")
-	if len(parts) != 2 {
-		return errors.New("hostPort must be in a form of <host>:<port>, example: localhost:8081")
-	}
-	port, err := strconv.Atoi(parts[1])
+func GetOutboundIP() net.IP {
+	conn, err := net.Dial("udp", "8.8.8.8:80")
 	if err != nil {
-		return err
+		log.Fatal(err)
 	}
+	defer conn.Close()
+
+	localAddr := conn.LocalAddr().(*net.UDPAddr)
+
+	return localAddr.IP
+}
+
+func (c *consulComponent) Register(ctx context.Context) error {
 	return c.client.Agent().ServiceRegister(&consul.AgentServiceRegistration{
-		Address: parts[0],
-		ID:      instanceID,
-		Name:    serviceName,
-		Port:    port,
+		Address: GetOutboundIP().String(),
+		ID:      c.instanceID,
+		Name:    c.serviceName,
+		Port:    50051,
 		Tags:    []string{c.version},
-		Check:   &consul.AgentServiceCheck{CheckID: instanceID, TTL: "5s"},
+		Check: &consul.AgentServiceCheck{
+			DeregisterCriticalServiceAfter: ttl.String(),
+			TLSSkipVerify:                  true,
+			CheckID:                        c.instanceID,
+			TTL:                            ttl.String()},
 	})
 }
 
 func (c *consulComponent) Deregister(ctx context.Context, instanceID string, serviceName string) error {
-	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-	err := c.client.Agent().ServiceDeregister(instanceID)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	fmt.Println("<<<<<<<<<<<<<<<<<<")
-	return err
+	return c.client.Agent().ServiceDeregister(instanceID)
 }
 
 func (c *consulComponent) ServiceAddresses(ctx context.Context, serviceName string) ([]string, error) {

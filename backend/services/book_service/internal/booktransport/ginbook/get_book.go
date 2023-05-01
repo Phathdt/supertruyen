@@ -1,6 +1,7 @@
 package ginbook
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -8,6 +9,7 @@ import (
 	sctx "github.com/viettranx/service-context"
 	"github.com/viettranx/service-context/core"
 	"supertruyen/common"
+	"supertruyen/plugins/appgrpc"
 	"supertruyen/services/book_service/internal/bookbiz"
 	"supertruyen/services/book_service/internal/bookrepo/postgresql"
 )
@@ -20,6 +22,7 @@ func GetBook(sc sctx.ServiceContext) gin.HandlerFunc {
 			return
 		}
 
+		client := sc.MustGet(common.KeyCompChapterClient).(appgrpc.ChapterClient)
 		db := sc.MustGet(common.KeyCompGorm).(common.GormComponent)
 
 		repo := postgresql.NewRepo(db.GetDB())
@@ -32,6 +35,13 @@ func GetBook(sc sctx.ServiceContext) gin.HandlerFunc {
 			return
 		}
 
+		chapter, err := client.GetTotalChapter(c.Request.Context(), id)
+		if err != nil {
+			common.WriteErrorResponse(c, err)
+			return
+		}
+
+		fmt.Println(chapter)
 		c.JSON(http.StatusOK, core.ResponseData(book))
 	}
 }

@@ -42,6 +42,8 @@ services:
     build:
       context: ./backend
       dockerfile: ./services/chapter_service/cmd/server/Dockerfile.dev
+    deploy:
+      replicas: 3
     environment:
       DB_DRIVER: postgres
       DB_DSN: ${DB_DSN}

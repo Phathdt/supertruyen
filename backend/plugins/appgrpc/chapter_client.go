@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 
+	_ "github.com/mbobakov/grpc-consul-resolver"
 	sctx "github.com/viettranx/service-context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -44,19 +45,19 @@ func (c *chapterClient) Activate(sc sctx.ServiceContext) error {
 
 	c.logger.Infoln("Setup chapter client service:", c.prefix)
 
+	target := fmt.Sprintf("consul://%s/%s?healthy=true", c.consulHost, "chapter-server")
 	conn, err := grpc.Dial(
-		fmt.Sprintf("consul://%s/chapter-service", c.consulHost),
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		target,
 		grpc.WithDefaultServiceConfig(`{"loadBalancingPolicy": "round_robin"}`),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
-
 	if err != nil {
 		return err
 	}
 
 	c.client = protos.NewChapterServiceClient(conn)
 
-	c.logger.Infof("Setup chapter client service success with url %s", fmt.Sprintf("consul://%s/chapter-service", c.consulHost))
+	c.logger.Infof("Setup chapter client service success with url %s", target)
 
 	return nil
 }
