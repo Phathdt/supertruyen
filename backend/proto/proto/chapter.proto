@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package demo;
+
+option go_package = "supertruyen_proto/";
+
+message GetTotalChapterRequest{
+  int32 id = 1;
+}
+
+message GetTotalChapterResponse {
+  int32 total = 1;
+}
+
+service ChapterService {
+  rpc GetTotalChapter (GetTotalChapterRequest) returns (GetTotalChapterResponse);
+}

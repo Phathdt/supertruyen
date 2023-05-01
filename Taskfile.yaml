@@ -13,6 +13,11 @@ tasks:
     cmds:
       - cd migrate && go run main.go {{.CLI_ARGS}}
 
+  generate-proto:
+    desc: generate proto files
+    cmds:
+      - cd backend/proto && buf generate
+
   book-server:
     cmds:
       - cd backend && GOOS=linux GARCH=amd64 CGO_ENABLED=0 go build -o book-server services/book_service/cmd/server/main.go
