@@ -7,7 +7,7 @@ import (
 )
 
 type GetBookRepo interface {
-	GetBookDetail(ctx context.Context, id int) (*entity.Book, error)
+	GetBookById(ctx context.Context, id int) (*entity.Book, error)
 }
 
 type getBookBiz struct {
@@ -19,5 +19,5 @@ func NewGetBookBiz(repo GetBookRepo) *getBookBiz {
 }
 
 func (b *getBookBiz) Response(ctx context.Context, id int) (*entity.Book, error) {
-	return b.repo.GetBookDetail(ctx, id)
+	return b.repo.GetBookById(ctx, id)
 }

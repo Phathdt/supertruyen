@@ -1,4 +1,4 @@
-package chapterstorage
+package postgresql
 
 import (
 	"context"
@@ -10,17 +10,17 @@ import (
 	"supertruyen/services/chapter_service/internal/chaptermodel"
 )
 
-type storage struct {
+type repo struct {
 	db *gorm.DB
 }
 
-func NewStorage(db *gorm.DB) *storage {
-	return &storage{db: db}
+func NewRepo(db *gorm.DB) *repo {
+	return &repo{db: db}
 }
-func (s *storage) ListChapter(ctx context.Context, filter *chaptermodel.Filter, paging *core.Paging) ([]entity.Chapter, error) {
+func (r *repo) ListChapter(ctx context.Context, filter *chaptermodel.Filter, paging *core.Paging) ([]entity.Chapter, error) {
 	var chapters []entity.Chapter
 
-	db := s.db.Table(entity.Chapter{}.TableName())
+	db := r.db.Table(entity.Chapter{}.TableName())
 
 	if filter.BookId != nil {
 		db = db.Where("book_id = ?", filter.BookId)
@@ -43,10 +43,10 @@ func (s *storage) ListChapter(ctx context.Context, filter *chaptermodel.Filter, 
 	return chapters, nil
 }
 
-func (s *storage) GetChapterDetail(ctx context.Context, id int) (*entity.Chapter, error) {
+func (r *repo) GetChapterById(ctx context.Context, id int) (*entity.Chapter, error) {
 	var data entity.Chapter
 
-	if err := s.db.
+	if err := r.db.
 		Table(data.TableName()).
 		Where("id = ?", id).
 		First(&data).Error; err != nil {

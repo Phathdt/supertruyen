@@ -9,8 +9,7 @@ import (
 	"supertruyen/common"
 	"supertruyen/services/book_service/internal/bookbiz"
 	"supertruyen/services/book_service/internal/bookmodel"
-	"supertruyen/services/book_service/internal/bookrepo"
-	"supertruyen/services/book_service/internal/bookstorage"
+	"supertruyen/services/book_service/internal/bookrepo/postgresql"
 )
 
 func ListBook(sc sctx.ServiceContext) gin.HandlerFunc {
@@ -31,8 +30,7 @@ func ListBook(sc sctx.ServiceContext) gin.HandlerFunc {
 
 		db := sc.MustGet(common.KeyCompGorm).(common.GormComponent)
 
-		storage := bookstorage.NewStorage(db.GetDB())
-		repo := bookrepo.NewRepo(storage)
+		repo := postgresql.NewRepo(db.GetDB())
 		biz := bookbiz.NewListBookBiz(repo)
 
 		books, err := biz.Response(c.Request.Context(), &rp.Filter, &rp.Paging)

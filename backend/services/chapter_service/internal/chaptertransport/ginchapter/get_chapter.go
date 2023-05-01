@@ -9,8 +9,7 @@ import (
 	"github.com/viettranx/service-context/core"
 	"supertruyen/common"
 	"supertruyen/services/chapter_service/internal/chapterbiz"
-	"supertruyen/services/chapter_service/internal/chapterrepo"
-	"supertruyen/services/chapter_service/internal/chapterstorage"
+	"supertruyen/services/chapter_service/internal/chapterrepo/postgresql"
 )
 
 func GetBook(sc sctx.ServiceContext) gin.HandlerFunc {
@@ -23,8 +22,7 @@ func GetBook(sc sctx.ServiceContext) gin.HandlerFunc {
 
 		db := sc.MustGet(common.KeyCompGorm).(common.GormComponent)
 
-		storage := chapterstorage.NewStorage(db.GetDB())
-		repo := chapterrepo.NewRepo(storage)
+		repo := postgresql.NewRepo(db.GetDB())
 		biz := chapterbiz.NewGetChapterBiz(repo)
 
 		book, err := biz.Response(c.Request.Context(), id)

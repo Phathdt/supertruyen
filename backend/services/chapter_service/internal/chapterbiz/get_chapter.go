@@ -7,7 +7,7 @@ import (
 )
 
 type GetChapterRepo interface {
-	GetChapterDetail(ctx context.Context, id int) (*entity.Chapter, error)
+	GetChapterById(ctx context.Context, id int) (*entity.Chapter, error)
 }
 
 type getChapterBiz struct {
@@ -19,5 +19,5 @@ func NewGetChapterBiz(repo GetChapterRepo) *getChapterBiz {
 }
 
 func (b *getChapterBiz) Response(ctx context.Context, id int) (*entity.Chapter, error) {
-	return b.repo.GetChapterDetail(ctx, id)
+	return b.repo.GetChapterById(ctx, id)
 }

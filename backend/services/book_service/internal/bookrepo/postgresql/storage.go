@@ -1,4 +1,4 @@
-package bookstorage
+package postgresql
 
 import (
 	"context"
@@ -10,18 +10,18 @@ import (
 	"supertruyen/services/book_service/internal/bookmodel"
 )
 
-type storage struct {
+type repo struct {
 	db *gorm.DB
 }
 
-func NewStorage(db *gorm.DB) *storage {
-	return &storage{db: db}
+func NewRepo(db *gorm.DB) *repo {
+	return &repo{db: db}
 }
 
-func (s *storage) ListBook(ctx context.Context, filter *bookmodel.Filter, paging *core.Paging) ([]entity.Book, error) {
+func (r *repo) ListBook(ctx context.Context, filter *bookmodel.Filter, paging *core.Paging) ([]entity.Book, error) {
 	var books []entity.Book
 
-	db := s.db.Table(entity.Book{}.TableName())
+	db := r.db.Table(entity.Book{}.TableName())
 
 	//TODO update with filter
 
@@ -42,10 +42,10 @@ func (s *storage) ListBook(ctx context.Context, filter *bookmodel.Filter, paging
 	return books, nil
 }
 
-func (s *storage) GetBookById(ctx context.Context, id int) (*entity.Book, error) {
+func (r *repo) GetBookById(ctx context.Context, id int) (*entity.Book, error) {
 	var book entity.Book
 
-	if err := s.db.
+	if err := r.db.
 		Table(book.TableName()).
 		Where("id = ?", id).
 		First(&book).Error; err != nil {
