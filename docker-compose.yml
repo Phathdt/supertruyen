@@ -25,7 +25,7 @@ services:
   book-server:
     build:
       context: ./backend
-      dockerfile: ./services/book_service/server/Dockerfile.dev
+      dockerfile: ./services/book_service/cmd/server/Dockerfile.dev
     environment:
       DB_DRIVER: postgres
       DB_DSN: ${DB_DSN}
@@ -34,7 +34,7 @@ services:
   chapter-server:
     build:
       context: ./backend
-      dockerfile: ./services/chapter_service/server/Dockerfile.dev
+      dockerfile: ./services/chapter_service/cmd/server/Dockerfile.dev
     environment:
       DB_DRIVER: postgres
       DB_DSN: ${DB_DSN}

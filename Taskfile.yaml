@@ -10,7 +10,7 @@ tasks:
 
   book-server:
     cmds:
-      - cd backend && GOOS=linux GARCH=amd64 CGO_ENABLED=0 go build -o book-server services/book_service/server/main.go
+      - cd backend && GOOS=linux GARCH=amd64 CGO_ENABLED=0 go build -o book-server services/book_service/cmd/server/main.go
       - defer: cd backend && rm book-server
       - docker-compose build book-server
       - docker-compose up book-server
