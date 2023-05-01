@@ -8,6 +8,11 @@ tasks:
       - docker-compose build gateway
       - docker-compose up gateway
 
+  migrate:
+    desc: migrate db
+    cmds:
+      - cd migrate && go run main.go {{.CLI_ARGS}}
+
   book-server:
     cmds:
       - cd backend && GOOS=linux GARCH=amd64 CGO_ENABLED=0 go build -o book-server services/book_service/cmd/server/main.go
@@ -15,14 +20,9 @@ tasks:
       - docker-compose build book-server
       - docker-compose up book-server
 
-  migrate:
-    desc: migrate db
-    cmds:
-      - cd migrate && go run main.go {{.CLI_ARGS}}
-
   chapter-server:
     cmds:
-      - cd backend && GOOS=linux GARCH=amd64 CGO_ENABLED=0 go build -o chapter-server services/chapter_service/server/main.go
+      - cd backend && GOOS=linux GARCH=amd64 CGO_ENABLED=0 go build -o chapter-server services/chapter_service/cmd/server/main.go
       - defer: cd backend && rm chapter-server
       - docker-compose build chapter-server
       - docker-compose up chapter-server

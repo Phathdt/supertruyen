@@ -9,6 +9,11 @@ services:
       POSTGRES_PASSWORD: 123123123
       POSTGRES_DB: supertruyen
 
+  consul:
+    image: consul:1.15
+    ports:
+      - 8500:8500
+
   gateway:
     build:
       context: ./gateway
@@ -30,6 +35,7 @@ services:
       DB_DRIVER: postgres
       DB_DSN: ${DB_DSN}
       CLERK_TOKEN: ${CLERK_TOKEN}
+      CONSUL_HOST: consul:8500
 
   chapter-server:
     build:
@@ -39,3 +45,4 @@ services:
       DB_DRIVER: postgres
       DB_DSN: ${DB_DSN}
       CLERK_TOKEN: ${CLERK_TOKEN}
+      CONSUL_HOST: consul:8500

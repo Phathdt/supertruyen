@@ -13,9 +13,12 @@ import (
 	smdlw "github.com/viettranx/service-context/component/ginc/middleware"
 	"github.com/viettranx/service-context/component/gormc"
 	"supertruyen/common"
-	"supertruyen/middleware"
-	"supertruyen/plugins/clerkc"
+	"supertruyen/plugins/discovery/consul"
 	"supertruyen/services/book_service/internal/booktransport/ginbook"
+)
+
+const (
+	serviceName = "book-service"
 )
 
 func newServiceCtx() sctx.ServiceContext {
@@ -23,7 +26,7 @@ func newServiceCtx() sctx.ServiceContext {
 		sctx.WithName("book service"),
 		sctx.WithComponent(ginc.NewGin(common.KeyCompGIN)),
 		sctx.WithComponent(gormc.NewGormDB(common.KeyCompGorm, "")),
-		sctx.WithComponent(clerkc.NewClerkComponent(common.KeyClerk)),
+		sctx.WithComponent(consul.NewConsulComponent(common.KeyCompConsul, serviceName)),
 	)
 }
 
@@ -41,8 +44,6 @@ var rootCmd = &cobra.Command{
 			logger.Fatal(err)
 		}
 
-		clerkComp := serviceCtx.MustGet(common.KeyClerk).(common.ClerkComponent)
-
 		ginComp := serviceCtx.MustGet(common.KeyCompGIN).(common.GINComponent)
 
 		router := ginComp.GetRouter()
@@ -56,11 +57,6 @@ var rootCmd = &cobra.Command{
 		{
 			publicRouter.GET("", ginbook.ListBook(serviceCtx))
 			publicRouter.GET("/:id", ginbook.GetBook(serviceCtx))
-		}
-
-		protectedRoute := router.Group("/api/books", middleware.RequireAuth(clerkComp.GetClient()))
-		{
-			protectedRoute.POST("", ginbook.CreateBook(serviceCtx))
 		}
 
 		if err := router.Run(fmt.Sprintf(":%d", ginComp.GetPort())); err != nil {

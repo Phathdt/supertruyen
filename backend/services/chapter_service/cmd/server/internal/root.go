@@ -1,4 +1,4 @@
-package cmd
+package internal
 
 import (
 	"fmt"
@@ -14,7 +14,12 @@ import (
 	"github.com/viettranx/service-context/component/gormc"
 	"supertruyen/common"
 	"supertruyen/plugins/clerkc"
+	"supertruyen/plugins/discovery/consul"
 	"supertruyen/services/chapter_service/internal/chaptertransport/ginchapter"
+)
+
+const (
+	serviceName = "chapter-server"
 )
 
 func newServiceCtx() sctx.ServiceContext {
@@ -22,7 +27,8 @@ func newServiceCtx() sctx.ServiceContext {
 		sctx.WithName("chapter service"),
 		sctx.WithComponent(ginc.NewGin(common.KeyCompGIN)),
 		sctx.WithComponent(gormc.NewGormDB(common.KeyCompGorm, "")),
-		sctx.WithComponent(clerkc.NewClerkComponent(common.KeyClerk)),
+		sctx.WithComponent(clerkc.NewClerkComponent(common.KeyCompClerk)),
+		sctx.WithComponent(consul.NewConsulComponent(common.KeyCompConsul, serviceName)),
 	)
 }
 
@@ -40,7 +46,7 @@ var rootCmd = &cobra.Command{
 			logger.Fatal(err)
 		}
 
-		//clerkComp := serviceCtx.MustGet(common.KeyClerk).(common.ClerkComponent)
+		//clerkComp := serviceCtx.MustGet(common.KeyCompClerk).(common.ClerkComponent)
 
 		ginComp := serviceCtx.MustGet(common.KeyCompGIN).(common.GINComponent)
 
