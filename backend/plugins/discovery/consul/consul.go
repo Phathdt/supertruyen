@@ -3,8 +3,6 @@ package consul
 import (
 	"context"
 	"fmt"
-	"log"
-	"net"
 	"time"
 
 	consul "github.com/hashicorp/consul/api"
@@ -57,7 +55,7 @@ func (c *consulComponent) Activate(sc sctx.ServiceContext) error {
 
 	go func() {
 		for {
-			if err := c.ReportHealthyState(c.instanceID, c.serviceName); err != nil {
+			if err = c.ReportHealthyState(c.instanceID, c.serviceName); err != nil {
 				c.logger.Errorln("Failed to report healthy state: " + err.Error())
 			}
 			time.Sleep(1 * time.Second)
@@ -71,21 +69,9 @@ func (c *consulComponent) Stop() error {
 	return c.Deregister(context.Background(), c.instanceID, c.serviceName)
 }
 
-func GetOutboundIP() net.IP {
-	conn, err := net.Dial("udp", "8.8.8.8:80")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer conn.Close()
-
-	localAddr := conn.LocalAddr().(*net.UDPAddr)
-
-	return localAddr.IP
-}
-
 func (c *consulComponent) Register(ctx context.Context) error {
 	return c.client.Agent().ServiceRegister(&consul.AgentServiceRegistration{
-		Address: GetOutboundIP().String(),
+		Address: discovery.GetOutboundIP().String(),
 		ID:      c.instanceID,
 		Name:    c.serviceName,
 		Port:    50051,

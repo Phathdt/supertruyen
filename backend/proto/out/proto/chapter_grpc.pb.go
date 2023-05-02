@@ -35,7 +35,7 @@ func NewChapterServiceClient(cc grpc.ClientConnInterface) ChapterServiceClient {
 
 func (c *chapterServiceClient) GetTotalChapter(ctx context.Context, in *GetTotalChapterRequest, opts ...grpc.CallOption) (*GetTotalChapterResponse, error) {
 	out := new(GetTotalChapterResponse)
-	err := c.cc.Invoke(ctx, "/demo.ChapterService/GetTotalChapter", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/supertruyen_proto.ChapterService/GetTotalChapter", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +78,7 @@ func _ChapterService_GetTotalChapter_Handler(srv interface{}, ctx context.Contex
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/demo.ChapterService/GetTotalChapter",
+		FullMethod: "/supertruyen_proto.ChapterService/GetTotalChapter",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ChapterServiceServer).GetTotalChapter(ctx, req.(*GetTotalChapterRequest))
@@ -90,7 +90,7 @@ func _ChapterService_GetTotalChapter_Handler(srv interface{}, ctx context.Contex
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var ChapterService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "demo.ChapterService",
+	ServiceName: "supertruyen_proto.ChapterService",
 	HandlerType: (*ChapterServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

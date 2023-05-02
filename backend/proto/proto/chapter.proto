@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package demo;
+package supertruyen_proto;
 
 option go_package = "supertruyen_proto/";
 
