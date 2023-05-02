@@ -2,13 +2,13 @@ package appgrpc
 
 import (
 	"context"
-	"flag"
 	"fmt"
 
 	_ "github.com/mbobakov/grpc-consul-resolver"
 	sctx "github.com/viettranx/service-context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"supertruyen/plugins/common"
 	protos "supertruyen/proto/out/proto"
 )
 
@@ -37,7 +37,7 @@ func (c *chapterClient) ID() string {
 }
 
 func (c *chapterClient) InitFlags() {
-	flag.StringVar(&c.consulHost, "grpc_consul_host", "localhost:8500", "consult host, should be localhost:8500")
+	c.consulHost = common.ConsulHost
 }
 
 func (c *chapterClient) Activate(sc sctx.ServiceContext) error {

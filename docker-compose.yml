@@ -36,14 +36,11 @@ services:
       DB_DSN: ${DB_DSN}
       CLERK_TOKEN: ${CLERK_TOKEN}
       CONSUL_HOST: consul:8500
-      GRPC_CONSUL_HOST: consul:8500
 
   chapter-server:
     build:
       context: ./backend
       dockerfile: ./services/chapter_service/cmd/server/Dockerfile.dev
-    deploy:
-      replicas: 3
     environment:
       DB_DRIVER: postgres
       DB_DSN: ${DB_DSN}

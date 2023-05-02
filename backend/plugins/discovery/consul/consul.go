@@ -2,7 +2,6 @@ package consul
 
 import (
 	"context"
-	"flag"
 	"fmt"
 	"log"
 	"net"
@@ -10,6 +9,7 @@ import (
 
 	consul "github.com/hashicorp/consul/api"
 	sctx "github.com/viettranx/service-context"
+	"supertruyen/plugins/common"
 	"supertruyen/plugins/discovery"
 )
 
@@ -35,7 +35,7 @@ func (c *consulComponent) ID() string {
 }
 
 func (c *consulComponent) InitFlags() {
-	flag.StringVar(&c.consulHost, "consul_host", "localhost:8500", "consult consulHost, should be localhost:8500")
+	c.consulHost = common.ConsulHost
 }
 
 func (c *consulComponent) Activate(sc sctx.ServiceContext) error {
