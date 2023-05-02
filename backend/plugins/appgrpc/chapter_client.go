@@ -6,6 +6,8 @@ import (
 
 	_ "github.com/mbobakov/grpc-consul-resolver"
 	sctx "github.com/viettranx/service-context"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"supertruyen/plugins/common"
@@ -68,6 +70,10 @@ func (c *chapterClient) Stop() error {
 }
 
 func (c *chapterClient) GetTotalChapter(ctx context.Context, id int) (int, error) {
+	_, span := otel.Tracer("book").Start(ctx, "chat-client/Get")
+	defer span.End()
+	ctx = trace.ContextWithSpan(ctx, span)
+
 	rs, err := c.client.GetTotalChapter(ctx, &protos.GetTotalChapterRequest{Id: int32(id)})
 	if err != nil {
 		return 0, err

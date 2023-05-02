@@ -5,6 +5,8 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/viettranx/service-context/core"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/trace"
 	"gorm.io/gorm"
 	"supertruyen/entity"
 	"supertruyen/services/chapter_service/internal/chaptermodel"
@@ -44,6 +46,9 @@ func (r *repo) ListChapter(ctx context.Context, filter *chaptermodel.Filter, pag
 }
 
 func (r *repo) GetChapterById(ctx context.Context, id int) (*entity.Chapter, error) {
+	_, span := otel.Tracer("chapter-repo").Start(ctx, "Repository/Get")
+	defer span.End()
+	ctx = trace.ContextWithSpan(ctx, span)
 	var data entity.Chapter
 
 	if err := r.db.

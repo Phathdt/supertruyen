@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	sctx "github.com/viettranx/service-context"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/trace"
 	"supertruyen/common"
 	protos "supertruyen/proto/out/proto"
 	"supertruyen/services/chapter_service/internal/chapterrepo/postgresql"
@@ -19,6 +21,9 @@ func NewChapterGrpcServer(sc sctx.ServiceContext) *chapterGrpcServer {
 }
 
 func (s *chapterGrpcServer) GetTotalChapter(ctx context.Context, request *protos.GetTotalChapterRequest) (*protos.GetTotalChapterResponse, error) {
+	_, span := otel.Tracer("chapter-grpc").Start(ctx, "grpc/Get")
+	defer span.End()
+	ctx = trace.ContextWithSpan(ctx, span)
 	db := s.sc.MustGet(common.KeyCompGorm).(common.GormComponent)
 
 	repo := postgresql.NewRepo(db.GetDB())

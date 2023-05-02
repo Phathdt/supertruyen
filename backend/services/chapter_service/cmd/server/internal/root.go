@@ -17,6 +17,7 @@ import (
 	"supertruyen/plugins/clerkc"
 	"supertruyen/plugins/discovery/consul"
 	"supertruyen/plugins/gprc_server"
+	"supertruyen/plugins/tracing"
 	protos "supertruyen/proto/out/proto"
 	"supertruyen/services/chapter_service/internal/chaptertransport/chaptergrpc"
 	"supertruyen/services/chapter_service/internal/chaptertransport/ginchapter"
@@ -35,6 +36,7 @@ func newServiceCtx() sctx.ServiceContext {
 		sctx.WithComponent(clerkc.NewClerkComponent(common.KeyCompClerk)),
 		sctx.WithComponent(consul.NewConsulComponent(common.KeyCompConsul, serviceName, version, 3000)),
 		sctx.WithComponent(gprc_server.NewGprcServer(common.KeyCompGrpcServer)),
+		sctx.WithComponent(tracing.NewTracingClient(common.KeyCompJaeger, serviceName)),
 	)
 }
 

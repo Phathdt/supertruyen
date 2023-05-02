@@ -15,6 +15,7 @@ import (
 	"supertruyen/common"
 	"supertruyen/plugins/appgrpc"
 	"supertruyen/plugins/discovery/consul"
+	"supertruyen/plugins/tracing"
 	"supertruyen/services/book_service/internal/booktransport/ginbook"
 )
 
@@ -30,6 +31,7 @@ func newServiceCtx() sctx.ServiceContext {
 		sctx.WithComponent(gormc.NewGormDB(common.KeyCompGorm, "")),
 		sctx.WithComponent(consul.NewConsulComponent(common.KeyCompConsul, serviceName, version, 3000)),
 		sctx.WithComponent(appgrpc.NewChapterClient(common.KeyCompChapterClient)),
+		sctx.WithComponent(tracing.NewTracingClient(common.KeyCompJaeger, serviceName)),
 	)
 }
 
