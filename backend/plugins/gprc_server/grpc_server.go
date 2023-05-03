@@ -7,6 +7,7 @@ import (
 
 	grpcmiddleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	sctx "github.com/viettranx/service-context"
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
 	"supertruyen/plugins/gprc_server/logging"
 	"supertruyen/plugins/gprc_server/recovermiddleware"
@@ -48,10 +49,12 @@ func (s *gprcServer) Activate(sc sctx.ServiceContext) error {
 		s.logger.Infoln("Setup gRPC service:", s.prefix)
 		s.server = grpc.NewServer(
 			grpc.StreamInterceptor(grpcmiddleware.ChainStreamServer(
+				otelgrpc.StreamServerInterceptor(),
 				recovermiddleware.StreamServerInterceptor(),
 				logging.StreamServerInterceptor(s.logger),
 			)),
 			grpc.UnaryInterceptor(grpcmiddleware.ChainUnaryServer(
+				otelgrpc.UnaryServerInterceptor(),
 				recovermiddleware.UnaryServerInterceptor(),
 				logging.UnaryServerInterceptor(s.logger),
 			)),

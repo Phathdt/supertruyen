@@ -1,26 +1,24 @@
 package ginbook
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	sctx "github.com/viettranx/service-context"
 	"github.com/viettranx/service-context/core"
-	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/trace"
 	"supertruyen/common"
 	"supertruyen/plugins/appgrpc"
+	"supertruyen/plugins/tracing"
 	"supertruyen/services/book_service/internal/bookbiz"
 	"supertruyen/services/book_service/internal/bookrepo/postgresql"
 )
 
 func GetBook(sc sctx.ServiceContext) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		_, span := otel.Tracer("book").Start(c.Request.Context(), "Transport/Get")
+		ctx := c.Request.Context()
+		ctx, span := tracing.StartTrace(ctx, "book", "transport.get")
 		defer span.End()
-		ctx := trace.ContextWithSpan(c.Request.Context(), span)
 
 		id, err := strconv.Atoi(c.Param("id"))
 		if err != nil {
@@ -41,13 +39,12 @@ func GetBook(sc sctx.ServiceContext) gin.HandlerFunc {
 			return
 		}
 
-		chapter, err := client.GetTotalChapter(ctx, id)
+		_, err = client.GetTotalChapter(ctx, id)
 		if err != nil {
 			common.WriteErrorResponse(c, err)
 			return
 		}
 
-		fmt.Println(chapter)
 		c.JSON(http.StatusOK, core.ResponseData(book))
 	}
 }

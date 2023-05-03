@@ -2,12 +2,10 @@ package chaptergrpc
 
 import (
 	"context"
-	"fmt"
 
 	sctx "github.com/viettranx/service-context"
-	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/trace"
 	"supertruyen/common"
+	"supertruyen/plugins/tracing"
 	protos "supertruyen/proto/out/proto"
 	"supertruyen/services/chapter_service/internal/chapterrepo/postgresql"
 )
@@ -21,19 +19,17 @@ func NewChapterGrpcServer(sc sctx.ServiceContext) *chapterGrpcServer {
 }
 
 func (s *chapterGrpcServer) GetTotalChapter(ctx context.Context, request *protos.GetTotalChapterRequest) (*protos.GetTotalChapterResponse, error) {
-	_, span := otel.Tracer("chapter-grpc").Start(ctx, "grpc/Get")
+	ctx, span := tracing.WrapTraceIdFromIncomingContext(ctx, "chapter", "grpc.get")
 	defer span.End()
-	ctx = trace.ContextWithSpan(ctx, span)
+
 	db := s.sc.MustGet(common.KeyCompGorm).(common.GormComponent)
 
 	repo := postgresql.NewRepo(db.GetDB())
 
-	chapter, err := repo.GetChapterById(ctx, int(request.Id))
+	_, err := repo.GetChapterById(ctx, int(request.Id))
 	if err != nil {
 		return nil, err
 	}
-
-	fmt.Println(chapter)
 
 	return &protos.GetTotalChapterResponse{Total: 1}, nil
 }

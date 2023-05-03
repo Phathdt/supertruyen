@@ -5,10 +5,9 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/viettranx/service-context/core"
-	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/trace"
 	"gorm.io/gorm"
 	"supertruyen/entity"
+	"supertruyen/plugins/tracing"
 	"supertruyen/services/book_service/internal/bookmodel"
 )
 
@@ -47,9 +46,9 @@ func (r *repo) ListBook(ctx context.Context, filter *bookmodel.Filter, paging *c
 }
 
 func (r *repo) GetBookById(ctx context.Context, id int) (*entity.Book, error) {
-	_, span := otel.Tracer("book").Start(ctx, "Repository/Get")
+	_, span := tracing.StartTrace(ctx, "book", "repository.get")
 	defer span.End()
-	ctx = trace.ContextWithSpan(ctx, span)
+
 	var book entity.Book
 
 	if err := r.db.
