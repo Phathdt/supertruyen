@@ -12,6 +12,7 @@ import (
 	"github.com/viettranx/service-context/component/ginc"
 	smdlw "github.com/viettranx/service-context/component/ginc/middleware"
 	"github.com/viettranx/service-context/component/gormc"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 	"google.golang.org/grpc"
 	"supertruyen/common"
 	"supertruyen/plugins/clerkc"
@@ -63,7 +64,7 @@ var rootCmd = &cobra.Command{
 		ginComp := serviceCtx.MustGet(common.KeyCompGIN).(common.GINComponent)
 
 		router := ginComp.GetRouter()
-		router.Use(gin.Recovery(), gin.Logger(), smdlw.Recovery(serviceCtx))
+		router.Use(gin.Recovery(), gin.Logger(), smdlw.Recovery(serviceCtx), otelgin.Middleware(serviceName))
 
 		router.GET("/ping", func(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{"data": "pong"})
