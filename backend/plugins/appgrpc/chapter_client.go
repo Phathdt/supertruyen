@@ -6,6 +6,7 @@ import (
 
 	_ "github.com/mbobakov/grpc-consul-resolver"
 	sctx "github.com/viettranx/service-context"
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"supertruyen/plugins/common"
@@ -51,6 +52,8 @@ func (c *chapterClient) Activate(sc sctx.ServiceContext) error {
 		target,
 		grpc.WithDefaultServiceConfig(`{"loadBalancingPolicy": "round_robin"}`),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithUnaryInterceptor(otelgrpc.UnaryClientInterceptor()),
+		grpc.WithStreamInterceptor(otelgrpc.StreamClientInterceptor()),
 	)
 	if err != nil {
 		return err
